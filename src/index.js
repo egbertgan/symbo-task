@@ -19,9 +19,7 @@ create(
 
     Header: {},
 
-    content: {
-      extends: components.GridSelection,
-    },
+    content: {},
 
     Footer: { text: "Created By Egbert" },
   },

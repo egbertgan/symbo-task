@@ -2,7 +2,6 @@
 import { GridSelection, SimpleBox } from "./components.js";
 export default {
   "/": {
-    H1: { text: "Hello Symbols" },
     extend: GridSelection,
     // P: { text: "Lorem ipsum dolor sit amet" },
   },
