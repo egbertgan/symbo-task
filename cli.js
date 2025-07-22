@@ -1,97 +1,36 @@
-"use strict";
+const fs = require("fs");
+const path = require("path");
+const { program } = require("commander");
 
-import { Flex, Link, globalState } from "smbls";
+program
+  .command("create")
+  .option("--x <number>", "columns", "8")
+  .option("--y <number>", "rows", "4")
+  .description("Generate GridSelection component")
+  .action(({ x, y }) => {
+    const content = generateGridSelectionComponent(x, y);
+    const outPath = path.join(__dirname, "src", "components.js");
 
-export const Header = {
-  extend: Flex,
-  props: {
-    minWidth: "100%",
-    padding: "Z B",
-    align: "center space-between",
-  },
+    if (fs.existsSync(outPath)) {
+      const existing = fs.readFileSync(outPath, "utf-8");
+      if (existing.includes("// === GridSelection ===")) {
+        console.log("GridSelection component already exists in components.js — skipping append.");
+        return;
+      }
+    }
 
-  Flex: {
-    props: { gap: "C" },
-    childExtend: {
-      extend: Link,
-      props: ({ props }) => ({
-        textDecoration: window.location.pathname === props.href ? "underline" : "none",
-      }),
-    },
-    Text_logo: { href: "/", text: "Hello!" },
-    Text_about: { href: "/about", text: "About" },
-  },
+    fs.appendFileSync(outPath, "\n\n" + content);
+    console.log(`GridSelection component appended to ${outPath}`);
+  });
 
-  ThemeSwitcher: {},
-};
+program.parse();
 
-export const ThemeSwitcher = {
-  extend: Flex,
-  props: { gap: "A2" },
-  childExtend: {
-    props: (element, state) => ({
-      active: state.globalTheme === element.key,
-      cursor: "pointer",
-      ".active": {
-        fontWeight: "900",
-      },
-    }),
-    on: {
-      click: (event, element, state) => {
-        state.update({ globalTheme: element.key });
-      },
-    },
-  },
-  dark: { text: "Dark" },
-  light: { text: "Light" },
-  midnight: { text: "Midnight" },
-};
-
-export const Footer = {
-  props: {
-    padding: "Z B",
-    order: 9,
-  },
-};
-
-export const SimpleBox = {
-  node: "div",
-  props: {
-    background: "#FFFFFF",
-    padding: "A",
-    radius: "M",
-  },
-  style: {
-    color: "#000000",
-    fontSize: "18px",
-  },
-  text: "Hello from DOMQL!",
-};
-
-// export const GridExample = {
-//   Grid: {
-//     columns: "1fr 2fr",
-//     gap: "B",
-//     children: videos,
-//     childrenAs: "state",
-//     childProps: (el, state) => ({
-//       node: "div",
-//       style: {
-//         background: el.x <= state.selectedX && el.y <= state.selectedY ? "#3D7BD9" : "#E8F1FF",
-//         borderRadius: "4px",
-//         cursor: "pointer",
-//         transition: "background 0.2s ease",
-//         aspectRatio: "1 / 1",
-//         width: "100%",
-//       },
-//       on: {
-//         click: () => {
-//           state.selectedX = el.x;
-
+function generateGridSelectionComponent(x, y) {
+  return `
 // === GridSelection ===
 const squares = [];
-for (let y = 0; y < 8; y++) {
-  for (let x = 0; x < 16; x++) {
+for (let y = 0; y < ${y}; y++) {
+  for (let x = 0; x < ${x}; x++) {
     squares.push({ CoorX: x + 1, CoorY: y + 1, isSelected: false, backgroundColor: "#E8F1FF" });
   }
 }
@@ -120,7 +59,7 @@ export const GridSelection = {
         gap: "A",
         width: "100%",
         maxWidth: "100%",
-        columns: `repeat(16, 1fr)`,
+        columns: \`repeat(${x}, 1fr)\`,
         children: squares,
         childrenAs: "state",
         childProps: (el, state, root) => {
@@ -162,8 +101,8 @@ export const GridSelection = {
                   const coordText = document.querySelector(".selected-coordinates");
                   const totalText = document.querySelector(".total-selected");
 
-                  if (coordText) coordText.textContent = `Selection coordinates: ${clickedX},${clickedY}`;
-                  if (totalText) totalText.textContent = `Total cells selected: ${clickedX * clickedY}`;
+                  if (coordText) coordText.textContent = \`Selection coordinates: \${clickedX},\${clickedY}\`;
+                  if (totalText) totalText.textContent = \`Total cells selected: \${clickedX * clickedY}\`;
                 },
               },
             },
@@ -191,4 +130,5 @@ export const GridSelection = {
     },
   },
 };
-
+`;
+}

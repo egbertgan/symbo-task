@@ -1,0 +1,24 @@
+.default-box {
+  background-color: #e8f1ff !important;
+}
+
+.selected-box {
+  background-color: #3d7bd9 !important; /* Biru */
+}
+
+@font-face {
+  font-family: "Europa";
+  src: url("/public/fonts/europa-regular-webfont.woff") format("woff");
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "Europa";
+  src: url("/public/fonts/europa-bold-webfont.woff") format("woff");
+  font-weight: 700;
+}
+
+body,
+* {
+  font-family: "Europa", sans-serif;
+}
